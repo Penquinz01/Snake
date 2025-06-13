@@ -81,7 +81,7 @@ public class SnakeHead : MonoBehaviour
         var hit = Physics2D.Raycast(transform.position, transform.up, rayDistance, gameOverMask);
         if (hit.collider != null)
         {
-            if (hit.collider.CompareTag("GameOver")&& hit.collider.gameObject.TryGetComponent<SnakeBody>(out SnakeBody _) && snakeBodies.Count >= 3)
+            if (hit.collider.CompareTag("GameOver")|| (hit.collider.gameObject.TryGetComponent<SnakeBody>(out SnakeBody _) && snakeBodies.Count >= 3))
             {
                 Debug.Log("Game Over");
                 GameManager.Instance.GameOver();
