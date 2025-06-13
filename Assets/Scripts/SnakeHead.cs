@@ -41,8 +41,7 @@ public class SnakeHead : MonoBehaviour
             timer = Time.time + moveTime;
         }
         Rotate();
-        CheckStatus();
-        Debug.Log(inputReader.moveInput);
+        CheckCollision();
     }
     private void Move()
     {
@@ -77,16 +76,15 @@ public class SnakeHead : MonoBehaviour
         }
 
     }
-    private void CheckStatus()
+    private void CheckCollision()
     {
         var hit = Physics2D.Raycast(transform.position, transform.up, rayDistance, gameOverMask);
         if (hit.collider != null)
         {
-            if (hit.collider.CompareTag("GameOver"))
+            if (hit.collider.CompareTag("GameOver")&& hit.collider.gameObject.TryGetComponent<SnakeBody>(out SnakeBody _) && snakeBodies.Count >= 3)
             {
                 Debug.Log("Game Over");
-                // Here you can implement game over logic, like restarting the game or showing a game over screen.
-                // For now, we will just log it.
+                GameManager.Instance.GameOver();
             }
             else
             {

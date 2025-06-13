@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Collections;
 using UnityEngine;
 
 public class SnakeBody : MonoBehaviour
@@ -12,11 +12,14 @@ public class SnakeBody : MonoBehaviour
     [SerializeField]private Transform nextSpawn;
     private Queue<Vector3> positionHistory;
     private Rigidbody2D rb;
+    private CircleCollider2D col;
     public Transform NextSpawn { get => nextSpawn;private set => nextSpawn = value; }
     protected void Awake()
     {
         positionHistory = new Queue<Vector3>();
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<CircleCollider2D>();
+
     }
     public void Initialize(SnakeHead snakeHead,SnakeBody prevBody,Vector2 direction)
     {
@@ -30,16 +33,9 @@ public class SnakeBody : MonoBehaviour
         if (prevBody!=null)
         {
             positionHistory.Enqueue(prevBody.transform.position);
-            //if (positionHistory.Count == 1) return;
             Vector3 nextPosition = positionHistory.Dequeue();
             rb.MovePosition(transform.position + (nextPosition-transform.position).normalized);
         }
-        //transform.position += (Vector3)currentDirection;
-        //if (nextBody != null)
-        //{
-        //    nextBody.setNextDirection(currentDirection);
-        //}
-        //currentDirection = nextDirection;
 
     }
     public void setNextDirection(Vector2 direction) => nextDirection = direction;
