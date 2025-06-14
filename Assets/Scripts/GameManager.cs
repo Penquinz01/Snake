@@ -1,6 +1,8 @@
 using Sirenix.OdinInspector;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     [Header("Spawner Initialisation")]
@@ -10,6 +12,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2Int Range;
     [SerializeField] private GameObject gameStart;
     [SerializeField] private GameObject gameEnd;
+    [SerializeField] private GameObject goldenFoodPrefab;
+    [SerializeField] private float goldenFoodSpawnTime = 15f;
+    private float goldenFoodTime;
+    private float timePlayed;
+    [SerializeField] private  TMPro.TextMeshProUGUI text;
 
     public bool IsGameOver { get; private set; } = false;
     public static GameManager Instance { get; private set; }
@@ -18,7 +25,9 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
+        if (Instance == null){ 
+            Instance = this;
+        }
         else
         {
             Destroy(gameObject);
@@ -33,6 +42,9 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         started = true;
+        time = 0;
+        timePlayed = Time.time;
+        goldenFoodTime = goldenFoodSpawnTime;
         if (gameStart != null)
         {
             gameStart.SetActive(false);
@@ -40,9 +52,8 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        time = 0;
+        
         Time.timeScale = 1;
-        Debug.Log($"Time scale is {Time.timeScale}");
         //Spawn();
     }
     private void Update()
@@ -59,14 +70,23 @@ public class GameManager : MonoBehaviour
         int y = Random.Range(-Range.y, Range.y);
         Vector2 spawnPos = new Vector2(x, y);
         Instantiate(foodPrefab, spawnPos, Quaternion.identity);
+        if (goldenFoodTime < Time.time)
+        {
+            x = Random.Range(-Range.x, Range.x);
+            y = Random.Range(-Range.y, Range.y);
+            spawnPos = new Vector2(x, y);
+            goldenFoodTime = Time.time + goldenFoodSpawnTime;
+            Instantiate(goldenFoodPrefab, spawnPos, Quaternion.identity);
+        }
         time = Time.time + timeToSpawn;
     }
     public void GameOver()
     {
-        Debug.Log("Game over called");
         Time.timeScale = 0;
         IsGameOver = true;
         if (gameEnd == null) return;
+        timePlayed = Time.time - timePlayed;
+        text.text = $"Time Played: {timePlayed.ToString("F2")}s";
         gameEnd.SetActive(true);
     }
     [Button("Restart")]

@@ -82,7 +82,6 @@ public class SnakeHead : MonoBehaviour
             dir = Vector3.up * sign;
             currentDirection = sign > 0 ? Direction.Up : Direction.Down;
         }
-        Debug.Log($"directio is {dir} and current direction is {currentDirection}");
         rb.MovePosition(transform.position + dir);
         for (int i = 1; i < snakeBodies.Count; i++)
         {
@@ -105,6 +104,7 @@ public class SnakeHead : MonoBehaviour
                 if (consumable != null)
                 {
                     consumable.Consume(this);
+                    AudioManager.instance.Play("Eat");
                     Destroy(hit.collider.gameObject);
                 }
             }
@@ -139,6 +139,13 @@ public class SnakeHead : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0, 0, 180);
                 break;
         }
+    }
+    public void DeleteLast()
+    {
+        Debug.Log("Deleting Last");
+        SnakeBody lastBody = snakeBodies[snakeBodies.Count - 1];
+        snakeBodies.Remove(lastBody);
+        Destroy(lastBody.gameObject);
     }
 }
 public enum Direction
