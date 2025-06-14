@@ -18,6 +18,7 @@ public class SnakeHead : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private LayerMask gameOverMask;
     private Direction? currentDirection = null;
+
     private void Awake()
     {
         inputReader = new InputReader();
@@ -105,6 +106,7 @@ public class SnakeHead : MonoBehaviour
                 {
                     consumable.Consume(this);
                     AudioManager.instance.Play("Eat");
+                    GameManager.Instance.incrementScore();
                     Destroy(hit.collider.gameObject);
                 }
             }

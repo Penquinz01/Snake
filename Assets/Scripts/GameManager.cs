@@ -16,7 +16,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float goldenFoodSpawnTime = 15f;
     private float goldenFoodTime;
     private float timePlayed;
+    private int score = 0;
     [SerializeField] private  TMPro.TextMeshProUGUI text;
+    [SerializeField] private TMPro.TextMeshProUGUI scoreText;
 
     public bool IsGameOver { get; private set; } = false;
     public static GameManager Instance { get; private set; }
@@ -56,6 +58,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         //Spawn();
     }
+    public void incrementScore() => score++;
     private void Update()
     {
         if(Time.time > time && started)
@@ -86,6 +89,7 @@ public class GameManager : MonoBehaviour
         IsGameOver = true;
         if (gameEnd == null) return;
         timePlayed = Time.time - timePlayed;
+        scoreText.text = $"Score: {score}";
         text.text = $"Time Played: {timePlayed.ToString("F2")}s";
         gameEnd.SetActive(true);
     }
