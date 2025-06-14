@@ -12,8 +12,18 @@ public class InputReader
     public InputReader()
     {
         control = new Control();
+        Enable();
+
+    }
+    public void Dispose()
+    {
+        control.Player.Move.performed -= OnMove;
+        control.Player.Disable();
+    }
+    public void Enable()
+    {
         control.Player.Enable();
-        control.Player.Move.started +=OnMove;
+        control.Player.Move.performed += OnMove;
     }
     private void OnMove(InputAction.CallbackContext cxt)
     {

@@ -8,7 +8,13 @@ public class GameManager : MonoBehaviour
     [SerializeField]private float timeToSpawn = 1f;
     [SerializeField] private GameObject foodPrefab;
     [SerializeField] private Vector2Int Range;
+    [SerializeField] private GameObject gameStart;
+    [SerializeField] private GameObject gameEnd;
+
+    public bool IsGameOver { get; private set; } = false;
     public static GameManager Instance { get; private set; }
+
+    public bool started = false;
 
     private void Awake()
     {
@@ -18,16 +24,30 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        DontDestroyOnLoad(gameObject);
+        if (gameStart != null)
+        {
+            gameStart.SetActive(true);
+        }
+        gameEnd?.SetActive(false);
+    }
+    public void StartGame()
+    {
+        started = true;
+        if (gameStart != null)
+        {
+            gameStart.SetActive(false);
+        }
     }
     private void Start()
     {
         time = 0;
+        Time.timeScale = 1;
+        Debug.Log($"Time scale is {Time.timeScale}");
         //Spawn();
     }
     private void Update()
     {
-        if(Time.time > time)
+        if(Time.time > time && started)
         {
             Spawn();
         }
@@ -43,13 +63,16 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver()
     {
+        Debug.Log("Game over called");
         Time.timeScale = 0;
+        IsGameOver = true;
+        if (gameEnd == null) return;
+        gameEnd.SetActive(true);
     }
     [Button("Restart")]
     public void RestartScene()
     {
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        time = 0;
     }
 }

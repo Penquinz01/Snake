@@ -4,29 +4,23 @@ using UnityEngine;
 
 public class SnakeBody : MonoBehaviour
 {
-    private Vector2 nextDirection;
-    private Vector2 currentDirection;
-    private SnakeBody nextBody;
+
     private SnakeHead snakeHead;
     private SnakeBody prevBody;
     [SerializeField]private Transform nextSpawn;
     private Queue<Vector3> positionHistory;
     private Rigidbody2D rb;
-    private CircleCollider2D col;
     public Transform NextSpawn { get => nextSpawn;private set => nextSpawn = value; }
     protected void Awake()
     {
         positionHistory = new Queue<Vector3>();
         rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<CircleCollider2D>();
 
     }
-    public void Initialize(SnakeHead snakeHead,SnakeBody prevBody,Vector2 direction)
+    public void Initialize(SnakeHead snakeHead,SnakeBody prevBody)
     {
-        currentDirection = direction;
         this.snakeHead = snakeHead;
         this.prevBody = prevBody;
-        nextBody = null;
     }
     public void Move()
     {
@@ -38,12 +32,11 @@ public class SnakeBody : MonoBehaviour
         }
 
     }
-    public void setNextDirection(Vector2 direction) => nextDirection = direction;
     public void newBody()
     {
         GameObject body = Instantiate(snakeHead.snakeHeadPrefab, transform.position, Quaternion.identity);
         SnakeBody snakeBody = body.GetComponent<SnakeBody>();
-        snakeBody.Initialize(snakeHead, this,currentDirection);
+        snakeBody.Initialize(snakeHead, this);
         snakeHead.AddToList(snakeBody);
 
     }

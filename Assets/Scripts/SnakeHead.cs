@@ -22,19 +22,33 @@ public class SnakeHead : MonoBehaviour
     {
         inputReader = new InputReader();
         snakeBody = GetComponent<SnakeBody>();
-        snakeBody.Initialize(this, null, Vector2.zero);
+        snakeBody.Initialize(this, null);
         snakeBodies.Add(snakeBody);
         rb = GetComponent<Rigidbody2D>();
         inputReader.OnMoveEvent += Move;
     }
-    void Start()
+    private void OnEnable()
     {
-
+        inputReader.Enable();
+    }
+    private void OnDisable()
+    {
+        inputReader.Dispose();
+    }
+    private void OnDestroy()
+    {
+        inputReader.Dispose();
     }
     public void AddToList(SnakeBody snake) => snakeBodies.Add(snake);
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance.IsGameOver) return;
+        if(!GameManager.Instance.started && inputReader.moveInput != Vector2.zero)
+        {
+            GameManager.Instance.started = true;
+            GameManager.Instance.StartGame();
+        }
         if (Time.time > timer)
         {
             Move();
@@ -45,13 +59,13 @@ public class SnakeHead : MonoBehaviour
     }
     private void Move()
     {
+        
         Vector3 dir = Vector3.zero;
         if (inputReader.moveInput.x != 0)
         {
             float sign = Mathf.Sign(inputReader.moveInput.x);
             if ((currentDirection == Direction.Left && sign > 0 || currentDirection == Direction.Right && sign < 0) && snakeBodies.Count > 1)
             {
-                Debug.Log("Cannot move in opposite direction");
                 sign *= -1;
             }
             dir = Vector3.right * sign;
@@ -63,12 +77,12 @@ public class SnakeHead : MonoBehaviour
             float sign = Mathf.Sign(inputReader.moveInput.y);
             if ((currentDirection == Direction.Down && sign > 0 || currentDirection == Direction.Up && sign < 0) && snakeBodies.Count > 1)
             {
-                Debug.Log("Cannot move in opposite direction");
                 sign *= -1;
             }
             dir = Vector3.up * sign;
             currentDirection = sign > 0 ? Direction.Up : Direction.Down;
         }
+        Debug.Log($"directio is {dir} and current direction is {currentDirection}");
         rb.MovePosition(transform.position + dir);
         for (int i = 1; i < snakeBodies.Count; i++)
         {
@@ -83,7 +97,6 @@ public class SnakeHead : MonoBehaviour
         {
             if (hit.collider.CompareTag("GameOver")|| (hit.collider.gameObject.TryGetComponent<SnakeBody>(out SnakeBody _) && snakeBodies.Count >= 3))
             {
-                Debug.Log("Game Over");
                 GameManager.Instance.GameOver();
             }
             else
